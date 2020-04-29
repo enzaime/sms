@@ -10,7 +10,7 @@ Add the following repository to project's `composer.json`.
         ....
     ],
 
-After adding the following code  run `composer require enzaime/sms` command from your project terminal.
+Now, run `composer require enzaime/sms` command from your project terminal.
 
 ### Environment Variable
 
