@@ -1,0 +1,28 @@
+{
+    "name": "enzaime/sms",
+    "description": "Enzaime SMS",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mahbub Rabbani",
+            "email": "mahbub.rucse@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Enzaime\\Sms\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Enzaime\\Sms\\ServiceProvider"
+            ],
+            "aliases": {
+                "EnzSms": "Enzaime\\Sms\\SmsFacade"
+            }
+        }
+    }
+}
