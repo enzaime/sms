@@ -9,7 +9,9 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "twilio/sdk": "^6.4"
+    },
     "autoload": {
         "psr-4": {
             "Enzaime\\Sms\\": "src/"
@@ -21,7 +23,7 @@
                 "Enzaime\\Sms\\ServiceProvider"
             ],
             "aliases": {
-                "EnzSms": "Enzaime\\Sms\\SmsFacade"
+                "EnzSms": "Enzaime\\Sms\\Facades\\EnzSms"
             }
         }
     }

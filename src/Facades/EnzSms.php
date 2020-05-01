@@ -1,10 +1,11 @@
 <?php
 
-namespace Enzaime\Sms;
+namespace Enzaime\Sms\Facades;
 
+use Enzaime\Sms\SmsService;
 use Illuminate\Support\Facades\Facade;
 
-class SmsFacade extends Facade
+class EnzSms extends Facade
 {
     /**
      * Get the registered name of the component.

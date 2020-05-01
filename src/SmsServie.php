@@ -2,51 +2,110 @@
 
 namespace Enzaime\Sms;
 
+use Enzaime\Sms\Contracts\SmsContract;
 use SoapClient;
 
-class SmsService
+class SmsService implements SmsContract
 {
-    private $campaignName = '';
-    private $client = null;
+    /**
+     * @var DriverManager
+     */
+    private $manager;
 
+    /**
+     * @var string
+     */
+    private $driver = '';
 
-    public function getClient()
+    public function __construct()
     {
-        if (!$this->client) {
-            $this->client = new SoapClient("https://api2.onnorokomSMS.com/sendSMS.asmx?wsdl");
-        }
-
-        return $this->client;
+        $this->manager = new DriverManager();
     }
 
-    public function campaign(string $name)
+    /**
+     * Set driver to send SMS
+     *
+     * @param string $name
+     * @return Enzaime\Sms\SmsService
+     */
+    public function driver($name = '')
     {
-        $this->campaignName = $name;
+        $this->driver = $name;
 
         return $this;
     }
 
-    public function oneToOne($mobileNumber, $text, $type = 'text')
+    /**
+     * Send SMS
+     *
+     * @param string|array $numberOrNumberList
+     * @param string $text
+     * @param string $type
+     * @return int|mixed
+     */
+    public function send($numberOrList, $text, $type = '')
     {
-        $data = $this->getData($mobileNumber, $text, $type = 'text');
+        if (!is_array($numberOrList)) {
+            $driver = $this->isLocal($numberOrList) 
+                ? $this->getDriver()
+                : $this->getFallbackDriver();
             
-        return $this->getClient()->__call("OneToOne", [$data]);
+            return $driver->send($numberOrList, $text, $type = '');
+        }
+
+        $locals = [];
+        $foreign = [];
+
+        foreach ($numberOrList as $number) {
+            if ($this->isLocal($number)) {
+                $locals[] = $number; 
+            } else {
+                $foreign[] = $number;
+            }
+        }
+
+        $count = 0;
+
+        if (count($locals)) {
+           $count = $this->getDriver()->send($locals, $text, $type);
+        } 
+
+        if (count($foreign)) {
+           $count += $this->getFallbackDriver()->send($foreign, $text, $type);
+        } 
+
+        return $count;
     }
 
-    protected function getCredentials()
+    public function isLocal(string $number)
     {
-        return config('sms');
+        $pattern = config('sms.local_number_regex');
+
+        return $pattern ? preg_match($pattern, $number) : true; 
     }
 
-    protected function getData($mobileNumber, $text, $type = 'text')
+    /**
+     * Undocumented function
+     *
+     * @return SmsContract
+     */
+    public function getDriver($driver = '')
     {
-        $data = [
-            'mobileNumber' => $mobileNumber,
-            'smsText' => $text,
-            'type' => $type,
-            'campaignName' => $this->campaignName,
-        ];
+        return $this->manager->getDriver($driver ?: $this->driver);
+    }
 
-        return array_merge($data, $this->getCredentials());
+    /**
+     * Return fallback driver if $this->driver is specified
+     *
+     * @return SmsContract
+     */
+    public function getFallbackDriver()
+    {
+        return $this->getDriver($this->driver ?: config('sms.fallback'));
+    }
+
+    public function __call($method, $arguments)
+    {
+        return $this->getDriver()->{$method}(...$arguments);
     }
 }
