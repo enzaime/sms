@@ -5,7 +5,7 @@ namespace Enzaime\Sms\Drivers;
 use Enzaime\Sms\Contracts\ClientInterface;
 use SoapClient;
 
-class OnnoRokom implements ClientInterface
+class Onnorokom implements ClientInterface
 {
     private $campaignName = '';
     private $client = null;
