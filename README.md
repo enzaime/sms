@@ -16,16 +16,28 @@ Now, run `composer require enzaime/sms` command from your project terminal.
 
 Modify the `.env` file to set the credentials;
 
-    SMS_USER=
-    SMS_PASSWORD= 
+    SMS_USER=onnorokom-user
+    SMS_PASSWORD=onnorokom-pass
+
+    TWILIO_SID=
+    TWILIO_AUTH_TOKEN=
+    TWILIO_NUMBER=
+
+> Recipient number must be international format(+8801xxxxxxxxx) for twilio driver. 
 
 ### Example
 
 Using Facade
 
-    EnzSms::oneToOne('0171065xxxx', 'Testing');
+    EnzSms::send('01xxxxxxxxx', 'Testing');
 
 Using `SmsService` Class
 
     $sms = new \Enzaime\Sms\SmsService();
-    $sms->oneToOne('0171065xxxx', 'Testing');
+    $sms->send('01xxxxxxxxx', 'Testing');
+
+Specify driver
+
+    EnzSms::driver('twilio')->send('+8801xxxxxxxxx', 'Testing');
+
+If you do not specify the driver then SMS will be sent to **BD** numbers through `onnorokom` and to **foreign** numbers through `twilio`.
