@@ -15,10 +15,10 @@ class Onnorokom implements ClientInterface
      *
      * @param string|array $numberOrNumberList
      * @param string $text
-     * @param string $type
+     * @param string|null $type
      * @return int|mixed
      */
-    public function send($mobileNumberOrList, $text, $type = 'text')
+    public function send($mobileNumberOrList, $text, $type = null)
     {
         if (!is_array($mobileNumberOrList)) {
             return $this->oneToOne($mobileNumberOrList, $text, $type = 'text');

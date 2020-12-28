@@ -9,8 +9,8 @@ interface SmsContract
      *
      * @param string|array $numberOrNumberList
      * @param string $text
-     * @param string $type
+     * @param string|null $type
      * @return int|mixed
      */
-    public function send($number, $text, $type);
+    public function send($number, $text, $type = null);
 }

@@ -37,10 +37,10 @@ class Twilio implements ClientInterface
      *
      * @param string|array $numberOrNumberList
      * @param string $text
-     * @param string $type
+     * @param string|null $type
      * @return int|mixed
      */
-    public function send($numberOrList, $text, $type = '')
+    public function send($numberOrList, $text, $type = null)
     {
         $client = $this->getClient();
 
