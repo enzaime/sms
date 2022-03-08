@@ -17,6 +17,11 @@
             "Enzaime\\Sms\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Enzaime\\Sms\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
@@ -25,6 +30,23 @@
             "aliases": {
                 "EnzSms": "Enzaime\\Sms\\Facades\\EnzSms"
             }
+        }
+    },
+    "require-dev": {
+        "doctrine/dbal": "^3.3",
+        "nunomaduro/phpinsights": "^2.1",
+        "orchestra/testbench": "^7.1",
+        "phpunit/phpunit": "^9.5.10"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-f": "vendor/bin/phpunit --filter",
+        "test-w": "vendor\\bin\\phpunit",
+        "test-wf": "vendor\\bin\\phpunit --filter"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }
