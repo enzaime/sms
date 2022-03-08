@@ -2,6 +2,7 @@
 
 namespace Enzaime\Sms;
 
+use BadMethodCallException;
 use Illuminate\Notifications\Notification;
  
 class SmsChannel
@@ -15,7 +16,7 @@ class SmsChannel
      */
     public function send($notifiable, Notification $notification)
     {
-        $message = $notification->toSms($notifiable);
+        
 
         $contactNumber = $this->getMobileNumber($notifiable);
         $sms = new SmsService();
@@ -29,6 +30,25 @@ class SmsChannel
             return $notifiable->routeNotificationForSms($notifiable);
         } 
 
-        return $notifiable->mobile ?: $notifiable->contact_no;
+        $mobile = $notifiable->mobile ?: $notifiable->contact_no;
+
+        if (! $mobile) {
+            throw new BadMethodCallException(get_class($notifiable) . " class must contains either a method named routeNotificationForSms or a property named mobile/contact_no ");
+        }
+
+        return $mobile;
+    }
+
+    public function getMessage($notifiable, Notification $notification)
+    {
+        if (method_exists($notification, 'toSms')) {
+            return $notification->toSms($notifiable);
+        }
+
+        if (method_exists($notification, 'toSMS')) {
+            return $notification->toSms($notifiable);
+        }
+        
+        throw new BadMethodCallException(get_class($notification) . " class must contains a method named toSms or toSMS ");
     }
 }
