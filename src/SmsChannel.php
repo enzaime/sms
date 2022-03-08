@@ -16,8 +16,8 @@ class SmsChannel
      */
     public function send($notifiable, Notification $notification)
     {
+        $message = $this->getMessage($notifiable, $notification);
         
-
         $contactNumber = $this->getMobileNumber($notifiable);
         $sms = new SmsService();
 
