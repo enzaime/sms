@@ -3,6 +3,7 @@
 namespace Enzaime\Sms;
 
 use BadMethodCallException;
+use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Notification;
  
 class SmsChannel
@@ -29,6 +30,11 @@ class SmsChannel
         if (method_exists($notifiable, 'routeNotificationForSms')) {
             return $notifiable->routeNotificationForSms($notifiable);
         } 
+      
+        
+        if ($notifiable instanceof AnonymousNotifiable && isset($notifiable->routes['\\' . self::class])) {
+            return $notifiable->routes['\\' . self::class]; 
+        }
 
         $mobile = $notifiable->mobile ?: $notifiable->contact_no;
 
