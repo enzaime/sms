@@ -14,6 +14,11 @@ return [
             'sid' => env('TWILIO_SID'),
             'token' => env('TWILIO_AUTH_TOKEN'),
             'number' => env('TWILIO_NUMBER')
+        ],
+        'alphabd' => [
+            'sender_id' => env('ALPHABD_SENDER_ID'),
+            'api_key' => env('ALPHABD_API_KEY'),
+            'api_url' => env('ALPHABD_API_URL', 'https://api.sms.net.bd/sendsms'),
         ]
     ]
 ];
