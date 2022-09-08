@@ -11,9 +11,9 @@ class AlphaBd implements ClientInterface
     /**
      * Send SMS
      *
-     * @param string|array $numberOrNumberList
-     * @param string $text
-     * @param string|null $type
+     * @param  string|array  $numberOrNumberList
+     * @param  string  $text
+     * @param  string|null  $type
      * @return int|mixed
      */
     public function send($numberOrList, $text, $type = null)
@@ -34,7 +34,7 @@ class AlphaBd implements ClientInterface
             ]);
         } catch (Exception $ex) {
         }
-        
+
         return $successCount;
     }
 

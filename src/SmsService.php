@@ -3,7 +3,6 @@
 namespace Enzaime\Sms;
 
 use Enzaime\Sms\Contracts\SmsContract;
-use SoapClient;
 
 class SmsService implements SmsContract
 {
@@ -25,7 +24,7 @@ class SmsService implements SmsContract
     /**
      * Set driver to send SMS
      *
-     * @param string $name
+     * @param  string  $name
      * @return Enzaime\Sms\SmsService
      */
     public function driver($name = '')
@@ -38,18 +37,18 @@ class SmsService implements SmsContract
     /**
      * Send SMS
      *
-     * @param string|array $numberOrNumberList
-     * @param string $text
-     * @param string $type
+     * @param  string|array  $numberOrNumberList
+     * @param  string  $text
+     * @param  string  $type
      * @return int|mixed
      */
     public function send($numberOrList, $text, $type = '')
     {
-        if (!is_array($numberOrList)) {
-            $driver = $this->isLocal($numberOrList) 
+        if (! is_array($numberOrList)) {
+            $driver = $this->isLocal($numberOrList)
                 ? $this->getDriver()
                 : $this->getFallbackDriver();
-            
+
             return $driver->send($numberOrList, $text, $type = '');
         }
 
@@ -58,7 +57,7 @@ class SmsService implements SmsContract
 
         foreach ($numberOrList as $number) {
             if ($this->isLocal($number)) {
-                $locals[] = $number; 
+                $locals[] = $number;
             } else {
                 $foreign[] = $number;
             }
@@ -67,12 +66,12 @@ class SmsService implements SmsContract
         $count = 0;
 
         if (count($locals)) {
-           $count = $this->getDriver()->send($locals, $text, $type);
-        } 
+            $count = $this->getDriver()->send($locals, $text, $type);
+        }
 
         if (count($foreign)) {
-           $count += $this->getFallbackDriver()->send($foreign, $text, $type);
-        } 
+            $count += $this->getFallbackDriver()->send($foreign, $text, $type);
+        }
 
         return $count;
     }
@@ -81,7 +80,7 @@ class SmsService implements SmsContract
     {
         $pattern = config('sms.local_number_regex');
 
-        return $pattern ? preg_match($pattern, $number) : true; 
+        return $pattern ? preg_match($pattern, $number) : true;
     }
 
     /**

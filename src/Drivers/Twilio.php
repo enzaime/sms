@@ -14,7 +14,6 @@ class Twilio implements ClientInterface
     private $client;
 
     /**
-     *
      * @var string
      */
     private $twilioNumber;
@@ -22,7 +21,7 @@ class Twilio implements ClientInterface
     /**
      * Set twilio number from which sms will be sent
      *
-     * @param string $number
+     * @param  string  $number
      * @return void
      */
     public function from(string $number)
@@ -35,21 +34,21 @@ class Twilio implements ClientInterface
     /**
      * Send SMS
      *
-     * @param string|array $numberOrNumberList
-     * @param string $text
-     * @param string|null $type
+     * @param  string|array  $numberOrNumberList
+     * @param  string  $text
+     * @param  string|null  $type
      * @return int|mixed
      */
     public function send($numberOrList, $text, $type = null)
     {
         $client = $this->getClient();
 
-        if (!is_array($numberOrList)) {
+        if (! is_array($numberOrList)) {
             return $client->messages->create(
-                $numberOrList, 
+                $numberOrList,
                 [
-                    'from' => $this->getFromNumber(), 
-                    'body' => $text
+                    'from' => $this->getFromNumber(),
+                    'body' => $text,
                 ]
             );
         }
@@ -59,17 +58,18 @@ class Twilio implements ClientInterface
         foreach ($numberOrList as $number) {
             try {
                 $client->messages->create(
-                    $number, 
+                    $number,
                     [
-                        'from' => $this->getFromNumber(), 
-                        'body' => $text
+                        'from' => $this->getFromNumber(),
+                        'body' => $text,
                     ]
                 );
-                
+
                 $successCount++;
-            } catch (Exception $ex) { }
+            } catch (Exception $ex) {
+            }
         }
-        
+
         return $successCount;
     }
 
@@ -80,7 +80,7 @@ class Twilio implements ClientInterface
      */
     public function getClient()
     {
-        if (!$this->client) {
+        if (! $this->client) {
             $config = $this->config();
 
             $this->client = new Client($config['sid'], $config['token']);
@@ -106,7 +106,7 @@ class Twilio implements ClientInterface
      */
     public function getFromNumber()
     {
-        if (!$this->twilioNumber) {
+        if (! $this->twilioNumber) {
             $this->twilioNumber = $this->config()['number'];
         }
 
