@@ -1,3 +1,9 @@
+### Available Gateways
+
+- [Twilio](https://www.twilio.com)
+- [Onnorokom](https://onnorokomsms.com/)
+- [AlphaBd](https://alpha.net.bd/SMS/)
+
 ### Integration
 
 Add the following repository to project's `composer.json`.
@@ -16,6 +22,7 @@ Now, run `composer require enzaime/sms` command from your project terminal.
 
 Modify the `.env` file to set the credentials;
 
+    SMS_DEFAULT_DRIVER= twilio or alpha_bd or onnorokom
     SMS_USER=onnorokom-user
     SMS_PASSWORD=onnorokom-pass
 
@@ -40,4 +47,4 @@ Specify driver
 
     EnzSms::driver('twilio')->send('+8801xxxxxxxxx', 'Testing');
 
-If you do not specify the driver then SMS will be sent to **BD** numbers through `onnorokom` and to **foreign** numbers through `twilio`.
+If you do not specify the driver then SMS will be sent to **Bangladeshi** numbers through `onnorokom` or `aplha_bd` and to **foreign** numbers through `twilio`.
