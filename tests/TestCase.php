@@ -14,7 +14,7 @@ class TestCase extends OrchestraTestCase
     /** @var \Virtunus\Tips\Models\User */
     protected $user;
 
-    /** @var string */ 
+    /** @var string */
 
     /** @var string */
     protected $userPassword = 'password';
@@ -35,9 +35,8 @@ class TestCase extends OrchestraTestCase
 
     /**
      * Define environment setup.
-     * 
+     *
      * @param  \Illuminate\Foundation\Application  $app
-     * 
      * @return void
      */
     protected function getEnvironmentSetUp($app)
@@ -62,7 +61,6 @@ class TestCase extends OrchestraTestCase
      * the config/app.php file.
      *
      * @param  \Illuminate\Foundation\Application  $app
-     * 
      * @return array
      */
     protected function getPackageProviders($app)
@@ -79,7 +77,6 @@ class TestCase extends OrchestraTestCase
      * facades upon which your package depends, e.g. Cartalyst/Sentry.
      *
      * @param  \Illuminate\Foundation\Application  $app
-     * 
      * @return array
      */
     protected function getPackageAliases($app)

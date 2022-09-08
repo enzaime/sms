@@ -8,22 +8,23 @@ use SoapClient;
 class Onnorokom implements ClientInterface
 {
     private $campaignName = '';
+
     private $client = null;
 
     /**
      * Send SMS
      *
-     * @param string|array $numberOrNumberList
-     * @param string $text
-     * @param string|null $type
+     * @param  string|array  $numberOrNumberList
+     * @param  string  $text
+     * @param  string|null  $type
      * @return int|mixed
      */
     public function send($mobileNumberOrList, $text, $type = null)
     {
-        if (!is_array($mobileNumberOrList)) {
+        if (! is_array($mobileNumberOrList)) {
             return $this->oneToOne($mobileNumberOrList, $text, $type = 'text');
         }
-        
+
         $successCount = 0;
 
         foreach ($mobileNumberOrList as $mobileNumber) {
@@ -33,12 +34,12 @@ class Onnorokom implements ClientInterface
         }
 
         return $successCount;
-    }   
+    }
 
     public function getClient()
     {
-        if (!$this->client) {
-            $this->client = new SoapClient("https://api2.onnorokomSMS.com/sendSMS.asmx?wsdl");
+        if (! $this->client) {
+            $this->client = new SoapClient('https://api2.onnorokomSMS.com/sendSMS.asmx?wsdl');
         }
 
         return $this->client;
@@ -77,7 +78,7 @@ class Onnorokom implements ClientInterface
     public function __call($name, $arguments)
     {
         $data = $this->getData(...$arguments);
-            
+
         return $this->getClient()->__call($name, [$data]);
     }
 }
