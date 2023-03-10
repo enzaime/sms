@@ -6,6 +6,11 @@ use Enzaime\Sms\Contracts\ClientInterface;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Alpha SMS driver integration.
+ *
+ * @see https://portal.sms.net.bd The admin dashboard.
+ */
 class AlphaBd implements ClientInterface
 {
     /**
@@ -34,7 +39,7 @@ class AlphaBd implements ClientInterface
             ]);
         } catch (Exception $ex) {
         }
-        
+
         return $successCount;
     }
 
