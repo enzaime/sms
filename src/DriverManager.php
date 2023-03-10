@@ -10,7 +10,7 @@ class DriverManager
     /**
      * Return driver to send SMS
      *
-     * @param string $name
+     * @param  string  $name
      * @return SmsContract
      */
     public function getDriver($name = ''): ClientInterface
@@ -24,7 +24,7 @@ class DriverManager
     {
         $name = Str::studly($name);
 
-        return app()->make('\\Enzaime\\Sms\\Drivers\\' . $name);
+        return app()->make('\\Enzaime\\Sms\\Drivers\\'.$name);
     }
 
     protected function defaultDriverName()

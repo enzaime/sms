@@ -5,20 +5,20 @@ return [
     'fallback' => env('SMS_FALLBACK_DRIVER', ''),
     'local_number_regex' => env('SMS_NUMBER_REGEX', '/^(?:\+8801|8801|01)[135-9](?:\d{8})$/'),
     'drivers' => [
-        'onnorokom' =>[
+        'onnorokom' => [
             'userName' => env('SMS_USER'),
             'userPassword' => env('SMS_PASSWORD'),
-            'maskName' => ''
+            'maskName' => '',
         ],
         'twilio' => [
             'sid' => env('TWILIO_SID'),
             'token' => env('TWILIO_AUTH_TOKEN'),
-            'number' => env('TWILIO_NUMBER')
+            'number' => env('TWILIO_NUMBER'),
         ],
         'alphabd' => [
             'sender_id' => env('ALPHABD_SENDER_ID'),
             'api_key' => env('ALPHABD_API_KEY'),
             'api_url' => env('ALPHABD_API_URL', 'https://api.sms.net.bd/sendsms'),
-        ]
-    ]
+        ],
+    ],
 ];
