@@ -31,14 +31,14 @@ class SmsChannel
             return $notifiable->routeNotificationForSms($notifiable);
         }
 
-        if ($notifiable instanceof AnonymousNotifiable && isset($notifiable->routes['\\'.self::class])) {
-            return $notifiable->routes['\\'.self::class];
+        if ($notifiable instanceof AnonymousNotifiable && isset($notifiable->routes['\\' . self::class])) {
+            return $notifiable->routes['\\' . self::class];
         }
 
         $mobile = $notifiable->mobile ?: $notifiable->contact_no;
 
         if (! $mobile) {
-            throw new BadMethodCallException(get_class($notifiable).' class must contains either a method named routeNotificationForSms or a property named mobile/contact_no ');
+            throw new BadMethodCallException(get_class($notifiable) . ' class must contains either a method named routeNotificationForSms or a property named mobile/contact_no ');
         }
 
         return $mobile;
@@ -51,9 +51,9 @@ class SmsChannel
         }
 
         if (method_exists($notification, 'toSMS')) {
-            return $notification->toSms($notifiable);
+            return $notification->toSMS($notifiable);
         }
 
-        throw new BadMethodCallException(get_class($notification).' class must contains a method named toSms or toSMS ');
+        throw new BadMethodCallException(get_class($notification) . ' class must contains a method named toSms or toSMS ');
     }
 }
