@@ -2,11 +2,12 @@
 
 namespace Enzaime\Sms\Drivers;
 
+use Enzaime\Sms\Contracts\SmsContract;
 use Enzaime\Sms\Contracts\ClientInterface;
 use Exception;
 use Twilio\Rest\Client;
 
-class Twilio implements ClientInterface
+class Twilio implements SmsContract, ClientInterface
 {
     /**
      * @var \Twilio\Rest\Client
@@ -22,12 +23,11 @@ class Twilio implements ClientInterface
      * Set twilio number from which sms will be sent
      *
      * @param  string  $number
-     * @return void
+     * @return $this
      */
     public function from(string $number)
     {
         $this->twilioNumber = $number;
-
         return $this;
     }
 
@@ -36,13 +36,11 @@ class Twilio implements ClientInterface
      *
      * @param  string|array  $numberOrNumberList
      * @param  string  $text
-     * @param  string|null  $type
      * @return int|mixed
      */
-    public function send($numberOrList, $text, $type = null)
+    public function send($numberOrList, $text)
     {
         $client = $this->getClient();
-
         if (! is_array($numberOrList)) {
             return $client->messages->create(
                 $numberOrList,
@@ -52,9 +50,7 @@ class Twilio implements ClientInterface
                 ]
             );
         }
-
         $successCount = 0;
-
         foreach ($numberOrList as $number) {
             try {
                 $client->messages->create(
@@ -64,12 +60,10 @@ class Twilio implements ClientInterface
                         'body' => $text,
                     ]
                 );
-
                 $successCount++;
             } catch (Exception $ex) {
             }
         }
-
         return $successCount;
     }
 
@@ -82,10 +76,8 @@ class Twilio implements ClientInterface
     {
         if (! $this->client) {
             $config = $this->config();
-
             $this->client = new Client($config['sid'], $config['token']);
         }
-
         return $this->client;
     }
 
@@ -109,7 +101,6 @@ class Twilio implements ClientInterface
         if (! $this->twilioNumber) {
             $this->twilioNumber = $this->config()['number'];
         }
-
         return $this->twilioNumber;
     }
 }

@@ -2,37 +2,51 @@
 
 namespace Enzaime\Sms\Drivers;
 
+use Enzaime\Sms\Contracts\SmsContract;
 use Enzaime\Sms\Contracts\ClientInterface;
 use SoapClient;
 
-class Onnorokom implements ClientInterface
+class Onnorokom implements SmsContract, ClientInterface
 {
     private $campaignName = '';
-
     private $client = null;
+    /**
+     * Optional type for the SMS (settable).
+     *
+     * @var string|null
+     */
+    protected $type = null;
+
+    /**
+     * Set the type for the SMS.
+     *
+     * @param string $type
+     * @return $this
+     */
+    public function setType(string $type)
+    {
+        $this->type = $type;
+        return $this;
+    }
 
     /**
      * Send SMS
      *
      * @param  string|array  $numberOrNumberList
      * @param  string  $text
-     * @param  string|null  $type
      * @return int|mixed
      */
-    public function send($mobileNumberOrList, $text, $type = null)
+    public function send($mobileNumberOrList, $text)
     {
+        $type = $this->type ?? 'text';
         if (! is_array($mobileNumberOrList)) {
-            return $this->oneToOne($mobileNumberOrList, $text, $type = 'text');
+            return $this->oneToOne($mobileNumberOrList, $text, $type);
         }
-
         $successCount = 0;
-
         foreach ($mobileNumberOrList as $mobileNumber) {
-            //Call oneToOne method of SoapClient
-            $resp = $this->oneToOne($mobileNumber, $text, $type = 'text');
+            $resp = $this->oneToOne($mobileNumber, $text, $type);
             $successCount += $resp ? 1 : 0;
         }
-
         return $successCount;
     }
 
@@ -41,14 +55,12 @@ class Onnorokom implements ClientInterface
         if (! $this->client) {
             $this->client = new SoapClient('https://api2.onnorokomSMS.com/sendSMS.asmx?wsdl');
         }
-
         return $this->client;
     }
 
     public function campaign(string $name)
     {
         $this->campaignName = $name;
-
         return $this;
     }
 
@@ -63,7 +75,6 @@ class Onnorokom implements ClientInterface
             'type' => $type,
             'campaignName' => $this->campaignName,
         ];
-        // Multiple numbers are separated by comma(,)
         if (strpos($mobileNumber, ',') !== false) {
             $data['numberList'] = $mobileNumber;
             $data['messageText'] = $text;
@@ -71,14 +82,26 @@ class Onnorokom implements ClientInterface
             $data['mobileNumber'] = $mobileNumber;
             $data['smsText'] = $text;
         }
-
         return array_merge($data, $this->getCredentials());
     }
 
     public function __call($name, $arguments)
     {
         $data = $this->getData(...$arguments);
-
         return $this->getClient()->__call($name, [$data]);
+    }
+
+    /**
+     * Send a single SMS (internal helper).
+     *
+     * @param string $mobileNumber
+     * @param string $text
+     * @param string $type
+     * @return mixed
+     */
+    protected function oneToOne($mobileNumber, $text, $type = 'text')
+    {
+        $data = $this->getData($mobileNumber, $text, $type);
+        return $this->getClient()->OneToOne($data);
     }
 }

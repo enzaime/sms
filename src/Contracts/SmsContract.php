@@ -2,15 +2,19 @@
 
 namespace Enzaime\Sms\Contracts;
 
+/**
+ * Interface SmsContract
+ *
+ * Contract for sending SMS messages.
+ */
 interface SmsContract
 {
     /**
-     * Send SMS
+     * Send SMS.
      *
      * @param  string|array  $numberOrNumberList
      * @param  string  $text
-     * @param  string|null  $type
      * @return int|mixed
      */
-    public function send($number, $text, $type = null);
+    public function send($number, $text);
 }

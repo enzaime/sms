@@ -4,52 +4,64 @@ namespace Enzaime\Sms;
 
 use Enzaime\Sms\Contracts\SmsContract;
 
+/**
+ * Class SmsService
+ *
+ * Main service for sending SMS using different drivers.
+ *
+ * @package Enzaime\Sms
+ */
 class SmsService implements SmsContract
 {
     /**
+     * The driver manager instance.
+     *
      * @var DriverManager
      */
     private $manager;
 
     /**
+     * The current driver name.
+     *
      * @var string
      */
     private $driver = '';
 
+    /**
+     * SmsService constructor.
+     */
     public function __construct()
     {
         $this->manager = new DriverManager();
     }
 
     /**
-     * Set driver to send SMS
+     * Set driver to send SMS.
      *
      * @param  string  $name
-     * @return Enzaime\Sms\SmsService
+     * @return $this
      */
     public function driver($name = '')
     {
         $this->driver = $name;
-
         return $this;
     }
 
     /**
-     * Send SMS
+     * Send SMS to one or multiple numbers.
      *
-     * @param  string|array  $numberOrNumberList
+     * @param  string|array  $numberOrList
      * @param  string  $text
-     * @param  string  $type
      * @return int|mixed
      */
-    public function send($numberOrList, $text, $type = '')
+    public function send($numberOrList, $text)
     {
         if (! is_array($numberOrList)) {
             $driver = $this->isLocal($numberOrList)
                 ? $this->getDriver()
                 : $this->getFallbackDriver();
 
-            return $driver->send($numberOrList, $text, $type = '');
+            return $driver->send($numberOrList, $text);
         }
 
         $locals = [];
@@ -66,26 +78,32 @@ class SmsService implements SmsContract
         $count = 0;
 
         if (count($locals)) {
-            $count = $this->getDriver()->send($locals, $text, $type);
+            $count = $this->getDriver()->send($locals, $text);
         }
 
         if (count($foreign)) {
-            $count += $this->getFallbackDriver()->send($foreign, $text, $type);
+            $count += $this->getFallbackDriver()->send($foreign, $text);
         }
 
         return $count;
     }
 
+    /**
+     * Determine if the given number is local (Bangladeshi).
+     *
+     * @param string $number
+     * @return bool
+     */
     public function isLocal(string $number)
     {
         $pattern = config('sms.local_number_regex');
-
         return $pattern ? preg_match($pattern, $number) : true;
     }
 
     /**
-     * Undocumented function
+     * Get the current driver instance.
      *
+     * @param string $driver
      * @return SmsContract
      */
     public function getDriver($driver = '')
@@ -94,7 +112,7 @@ class SmsService implements SmsContract
     }
 
     /**
-     * Return fallback driver if $this->driver is specified
+     * Get the fallback driver instance.
      *
      * @return SmsContract
      */
@@ -103,6 +121,13 @@ class SmsService implements SmsContract
         return $this->getDriver($this->driver ?: config('sms.fallback'));
     }
 
+    /**
+     * Dynamically call methods on the driver instance.
+     *
+     * @param string $method
+     * @param array $arguments
+     * @return mixed
+     */
     public function __call($method, $arguments)
     {
         return $this->getDriver()->{$method}(...$arguments);

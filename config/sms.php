@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'default' => env('SMS_DEFAULT_DRIVER', 'onnorokom'),
+    'default' => env('SMS_DEFAULT_DRIVER', 'log'),
     'fallback' => env('SMS_FALLBACK_DRIVER', ''),
     'local_number_regex' => env('SMS_NUMBER_REGEX', '/^(?:\+8801|8801|01)[135-9](?:\d{8})$/'),
     'drivers' => [
