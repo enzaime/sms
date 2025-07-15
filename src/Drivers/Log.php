@@ -10,20 +10,15 @@ use Illuminate\Support\Facades\Log as LaravelLog;
  *
  * SMS driver that logs messages instead of sending them.
  * Useful for local development and staging environments.
- *
- * @package Enzaime\Sms\Drivers
  */
 class Log implements SmsContract
 {
-
     /**
      * Send SMS by logging the message.
      *
-     * @param string|array $numberOrNumberList
-     * @param string $text
      * @return int Number of messages logged
      */
-    public function send($numberOrNumberList, $text)
+    public function send(string|array $numberOrNumberList, string $text): int
     {
         $numbers = is_array($numberOrNumberList) ? $numberOrNumberList : [$numberOrNumberList];
         foreach ($numbers as $number) {
@@ -32,6 +27,7 @@ class Log implements SmsContract
                 'text' => $text,
             ]);
         }
+
         return count($numbers);
     }
-} 
+}

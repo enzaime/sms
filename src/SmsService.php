@@ -8,53 +8,43 @@ use Enzaime\Sms\Contracts\SmsContract;
  * Class SmsService
  *
  * Main service for sending SMS using different drivers.
- *
- * @package Enzaime\Sms
  */
 class SmsService implements SmsContract
 {
     /**
      * The driver manager instance.
-     *
-     * @var DriverManager
      */
-    private $manager;
+    private DriverManager $manager;
 
     /**
      * The current driver name.
-     *
-     * @var string
      */
-    private $driver = '';
+    private string $driver = '';
 
     /**
      * SmsService constructor.
      */
     public function __construct()
     {
-        $this->manager = new DriverManager();
+        $this->manager = new DriverManager;
     }
 
     /**
      * Set driver to send SMS.
      *
-     * @param  string  $name
      * @return $this
      */
-    public function driver($name = '')
+    public function driver(string $name = ''): self
     {
         $this->driver = $name;
+
         return $this;
     }
 
     /**
      * Send SMS to one or multiple numbers.
-     *
-     * @param  string|array  $numberOrList
-     * @param  string  $text
-     * @return int|mixed
      */
-    public function send($numberOrList, $text)
+    public function send(string|array $numberOrList, string $text): int|mixed
     {
         if (! is_array($numberOrList)) {
             $driver = $this->isLocal($numberOrList)
@@ -90,45 +80,34 @@ class SmsService implements SmsContract
 
     /**
      * Determine if the given number is local (Bangladeshi).
-     *
-     * @param string $number
-     * @return bool
      */
-    public function isLocal(string $number)
+    public function isLocal(string $number): bool
     {
         $pattern = config('sms.local_number_regex');
+
         return $pattern ? preg_match($pattern, $number) : true;
     }
 
     /**
      * Get the current driver instance.
-     *
-     * @param string $driver
-     * @return SmsContract
      */
-    public function getDriver($driver = '')
+    public function getDriver(string $driver = ''): SmsContract
     {
         return $this->manager->getDriver($driver ?: $this->driver);
     }
 
     /**
      * Get the fallback driver instance.
-     *
-     * @return SmsContract
      */
-    public function getFallbackDriver()
+    public function getFallbackDriver(): SmsContract
     {
         return $this->getDriver($this->driver ?: config('sms.fallback'));
     }
 
     /**
      * Dynamically call methods on the driver instance.
-     *
-     * @param string $method
-     * @param array $arguments
-     * @return mixed
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, array $arguments): mixed
     {
         return $this->getDriver()->{$method}(...$arguments);
     }

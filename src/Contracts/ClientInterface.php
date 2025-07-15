@@ -11,8 +11,6 @@ interface ClientInterface
 {
     /**
      * Get the underlying client instance.
-     *
-     * @return mixed
      */
-    public function getClient();
+    public function getClient(): mixed;
 }

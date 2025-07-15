@@ -13,8 +13,6 @@ interface SmsContract
      * Send SMS.
      *
      * @param  string|array  $numberOrNumberList
-     * @param  string  $text
-     * @return int|mixed
      */
-    public function send($number, $text);
+    public function send(string|array $number, string $text): int;
 }

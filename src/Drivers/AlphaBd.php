@@ -17,10 +17,9 @@ class AlphaBd implements SmsContract
      * Send SMS
      *
      * @param  string|array  $numberOrNumberList
-     * @param  string  $text
      * @return int|mixed
      */
-    public function send($numberOrList, $text)
+    public function send(string|array $numberOrList, string $text): int
     {
         $successCount = 1;
         if (is_array($numberOrList)) {
@@ -36,6 +35,7 @@ class AlphaBd implements SmsContract
             ]);
         } catch (Exception $ex) {
         }
+
         return $successCount;
     }
 
