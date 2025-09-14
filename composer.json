@@ -37,7 +37,8 @@
         "nunomaduro/phpinsights": "^2.1",
         "orchestra/testbench": "^6.0|^7.0",
         "phpunit/phpunit": "^9.5.10",
-        "laravel/pint": "^1.0"
+        "laravel/pint": "^1.20",
+        "guzzlehttp/guzzle": "8.0.x-dev"
     },
     "scripts": {
         "test": "vendor/bin/phpunit",

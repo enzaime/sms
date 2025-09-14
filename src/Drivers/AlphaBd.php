@@ -2,7 +2,7 @@
 
 namespace Enzaime\Sms\Drivers;
 
-use Enzaime\Sms\Contracts\ClientInterface;
+use Enzaime\Sms\Contracts\SmsContract;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
@@ -11,25 +11,21 @@ use Illuminate\Support\Facades\Http;
  *
  * @see https://portal.sms.net.bd The admin dashboard.
  */
-class AlphaBd implements ClientInterface
+class AlphaBd implements SmsContract
 {
     /**
      * Send SMS
      *
      * @param  string|array  $numberOrNumberList
-     * @param  string  $text
-     * @param  string|null  $type
      * @return int|mixed
      */
-    public function send($numberOrList, $text, $type = null)
+    public function send(string|array $numberOrList, string $text): int
     {
         $successCount = 1;
-
         if (is_array($numberOrList)) {
             $successCount = count($numberOrList);
             $numberOrList = implode(',', $numberOrList);
         }
-
         try {
             $response = Http::get($this->getEndPoint(), [
                 'api_key' => $this->getApiKey(),
@@ -41,11 +37,6 @@ class AlphaBd implements ClientInterface
         }
 
         return $successCount;
-    }
-
-    public function getClient()
-    {
-        return null;
     }
 
     /**

@@ -2,7 +2,15 @@
 
 namespace Enzaime\Sms\Contracts;
 
-interface ClientInterface extends SmsContract
+/**
+ * Interface ClientInterface
+ *
+ * For drivers that expose an underlying client instance.
+ */
+interface ClientInterface
 {
-    public function getClient();
+    /**
+     * Get the underlying client instance.
+     */
+    public function getClient(): mixed;
 }

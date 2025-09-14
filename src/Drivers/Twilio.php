@@ -3,13 +3,13 @@
 namespace Enzaime\Sms\Drivers;
 
 use Enzaime\Sms\Contracts\ClientInterface;
+use Enzaime\Sms\Contracts\SmsContract;
 use Exception;
-use Twilio\Rest\Client;
 
-class Twilio implements ClientInterface
+class Twilio implements ClientInterface, SmsContract
 {
     /**
-     * @var \Twilio\Rest\Client
+     * @var \Twilio\Rest\Client|null
      */
     private $client;
 
@@ -21,8 +21,7 @@ class Twilio implements ClientInterface
     /**
      * Set twilio number from which sms will be sent
      *
-     * @param  string  $number
-     * @return void
+     * @return $this
      */
     public function from(string $number)
     {
@@ -35,26 +34,23 @@ class Twilio implements ClientInterface
      * Send SMS
      *
      * @param  string|array  $numberOrNumberList
-     * @param  string  $text
-     * @param  string|null  $type
      * @return int|mixed
      */
-    public function send($numberOrList, $text, $type = null)
+    public function send(string|array $numberOrList, string $text): int
     {
         $client = $this->getClient();
-
         if (! is_array($numberOrList)) {
-            return $client->messages->create(
+            $client->messages->create(
                 $numberOrList,
                 [
                     'from' => $this->getFromNumber(),
                     'body' => $text,
                 ]
             );
+
+            return 1;
         }
-
         $successCount = 0;
-
         foreach ($numberOrList as $number) {
             try {
                 $client->messages->create(
@@ -64,7 +60,6 @@ class Twilio implements ClientInterface
                         'body' => $text,
                     ]
                 );
-
                 $successCount++;
             } catch (Exception $ex) {
             }
@@ -75,15 +70,12 @@ class Twilio implements ClientInterface
 
     /**
      * Return twilio client
-     *
-     * @return \Twilio\Rest\Client
      */
-    public function getClient()
+    public function getClient(): ?\Twilio\Rest\Client
     {
         if (! $this->client) {
             $config = $this->config();
-
-            $this->client = new Client($config['sid'], $config['token']);
+            $this->client = new \Twilio\Rest\Client($config['sid'], $config['token']);
         }
 
         return $this->client;

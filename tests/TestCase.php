@@ -82,7 +82,7 @@ class TestCase extends OrchestraTestCase
     protected function getPackageAliases($app)
     {
         return [
-            //'YourPackage' => 'YourProject\YourPackage\Facades\YourPackage',
+            // 'YourPackage' => 'YourProject\YourPackage\Facades\YourPackage',
         ];
     }
 }
