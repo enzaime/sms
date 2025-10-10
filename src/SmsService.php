@@ -44,7 +44,7 @@ class SmsService implements SmsContract
     /**
      * Send SMS to one or multiple numbers.
      */
-    public function send(string|array $numberOrList, string $text): int|mixed
+    public function send(string|array $numberOrList, string $text)
     {
         if (! is_array($numberOrList)) {
             $driver = $this->isLocal($numberOrList)
