@@ -14,5 +14,5 @@ interface SmsContract
      *
      * @param  string|array  $numberOrNumberList
      */
-    public function send(string|array $number, string $text): int;
+    public function send(string|array $number, string $text);
 }
