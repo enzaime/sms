@@ -9,6 +9,7 @@ Easily integrate multiple SMS gateways into your Laravel application with a unif
 - [Twilio](https://www.twilio.com)
 - [Onnorokom](https://onnorokomsms.com/)
 - [AlphaBd](https://alpha.net.bd/SMS/)
+- [BulkSmsDhaka](https://bulksmsdhaka.net)
 - **Log** (for local/staging environments)
 
 ---
@@ -73,13 +74,16 @@ composer require enzaime/sms
 Add the following to your `.env` file:
 
 ```env
-SMS_DEFAULT_DRIVER=twilio|alpha_bd|onnorokom|log
+SMS_DEFAULT_DRIVER=twilio|alpha_bd|onnorokom|bulk_sms_dhaka|log
 SMS_USER=onnorokom-user
 SMS_PASSWORD=onnorokom-pass
 
 TWILIO_SID=your-twilio-sid
 TWILIO_AUTH_TOKEN=your-twilio-auth-token
 TWILIO_NUMBER=your-twilio-number
+
+BULKSMSDHAKA_API_KEY=your-bulksmsdhaka-api-key
+BULKSMSDHAKA_CALLER_ID=your-bulksmsdhaka-caller-id
 ```
 
 > **Twilio:** Recipient number must be in international format (e.g., `+8801xxxxxxxxx`).

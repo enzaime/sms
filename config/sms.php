@@ -20,5 +20,10 @@ return [
             'api_key' => env('ALPHABD_API_KEY'),
             'api_url' => env('ALPHABD_API_URL', 'https://api.sms.net.bd/sendsms'),
         ],
+        'bulksmsdhaka' => [
+            'caller_id' => env('BULKSMSDHAKA_CALLER_ID'),
+            'api_key' => env('BULKSMSDHAKA_API_KEY'),
+            'api_url' => env('BULKSMSDHAKA_API_URL', 'https://bulksmsdhaka.net/api/sendtext'),
+        ],
     ],
 ];
