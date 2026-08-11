@@ -5,6 +5,8 @@ namespace Enzaime\Sms\Drivers;
 use Enzaime\Sms\Contracts\SmsContract;
 use Exception;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 /**
  * Alpha SMS driver integration.
@@ -34,6 +36,25 @@ class AlphaBd implements SmsContract
                 'sender_id' => $this->getSenderId(),
             ]);
         } catch (Exception $ex) {
+            Log::error('[SMS][AlphaBd] send failed', [
+                'number' => $numberOrList,
+                'exception' => $ex->getMessage(),
+            ]);
+
+            return 0;
+        }
+
+        // The count is this driver's only report to its caller, so returning it
+        // without reading the response claimed every refused send as delivered
+        // — including the ones a gateway rejects with a perfectly clear 4xx.
+        if (! $response->successful()) {
+            Log::error('[SMS][AlphaBd] send failed', [
+                'number' => $numberOrList,
+                'status' => $response->status(),
+                'response' => Str::limit($response->body(), 500),
+            ]);
+
+            return 0;
         }
 
         return $successCount;
