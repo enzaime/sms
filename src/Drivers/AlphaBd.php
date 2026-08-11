@@ -3,8 +3,11 @@
 namespace Enzaime\Sms\Drivers;
 
 use Enzaime\Sms\Contracts\SmsContract;
+use Enzaime\Sms\Support\RedactsSensitiveValues;
 use Exception;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 /**
  * Alpha SMS driver integration.
@@ -13,6 +16,8 @@ use Illuminate\Support\Facades\Http;
  */
 class AlphaBd implements SmsContract
 {
+    use RedactsSensitiveValues;
+
     /**
      * Send SMS
      *
@@ -34,9 +39,45 @@ class AlphaBd implements SmsContract
                 'sender_id' => $this->getSenderId(),
             ]);
         } catch (Exception $ex) {
+            // The API key and the message body are query parameters, and the
+            // HTTP client puts the whole URL in its exception message — so a
+            // plain timeout would otherwise log the credential and the code.
+            $this->reportFailure($numberOrList, ['exception' => $ex->getMessage()]);
+
+            return 0;
+        }
+
+        // The count is this driver's only report to its caller, so returning it
+        // without reading the response claimed every refused send as delivered
+        // — including the ones a gateway rejects with a perfectly clear 4xx.
+        if (! $response->successful()) {
+            $this->reportFailure($numberOrList, [
+                'status' => $response->status(),
+                'response' => Str::limit($response->body(), 500),
+            ]);
+
+            return 0;
         }
 
         return $successCount;
+    }
+
+    /**
+     * Log a refused send, with everything taken off the wire redacted first:
+     * a gateway may echo the request back, and an exception message carries
+     * the full URL — API key and message body included.
+     *
+     * @param  array<string, mixed>  $context
+     */
+    protected function reportFailure(string $number, array $context): void
+    {
+        foreach (['exception', 'response'] as $tainted) {
+            if (isset($context[$tainted])) {
+                $context[$tainted] = $this->redact((string) $context[$tainted]);
+            }
+        }
+
+        Log::error('[SMS][AlphaBd] send failed', $context + ['number' => $number]);
     }
 
     /**
