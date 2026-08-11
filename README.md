@@ -7,8 +7,8 @@ Easily integrate multiple SMS gateways into your Laravel application with a unif
 ## Supported Gateways
 
 - [Twilio](https://www.twilio.com)
-- [Onnorokom](https://onnorokomsms.com/)
 - [AlphaBd](https://alpha.net.bd/SMS/)
+- [BulkSmsDhaka](https://bulksmsdhaka.net)
 - **Log** (for local/staging environments)
 
 ---
@@ -44,28 +44,6 @@ composer require enzaime/sms
 >   composer require twilio/sdk
 >   ```
 
-> **Onnorokom Driver:**
-> - Requires the **PHP SOAP extension**. Enable it in your PHP installation:
->
->   **Ubuntu/Debian:**
->   ```bash
->   sudo apt-get install php-soap
->   ```
->   **RedHat/CentOS:**
->   ```bash
->   sudo yum install php-soap
->   ```
->   **Mac (Homebrew):**
->   ```bash
->   brew install php
->   # (SOAP is included by default in most Homebrew PHP builds)
->   ```
->   **php.ini (if needed):**
->   ```ini
->   extension=soap
->   ```
->   After installation, restart your web server or PHP-FPM as needed.
-
 ---
 
 ## Configuration
@@ -73,13 +51,14 @@ composer require enzaime/sms
 Add the following to your `.env` file:
 
 ```env
-SMS_DEFAULT_DRIVER=twilio|alpha_bd|onnorokom|log
-SMS_USER=onnorokom-user
-SMS_PASSWORD=onnorokom-pass
+SMS_DEFAULT_DRIVER=twilio|alpha_bd|bulk_sms_dhaka|log
 
 TWILIO_SID=your-twilio-sid
 TWILIO_AUTH_TOKEN=your-twilio-auth-token
 TWILIO_NUMBER=your-twilio-number
+
+BULKSMSDHAKA_API_KEY=your-bulksmsdhaka-api-key
+BULKSMSDHAKA_CALLER_ID=your-bulksmsdhaka-caller-id
 ```
 
 > **Twilio:** Recipient number must be in international format (e.g., `+8801xxxxxxxxx`).
@@ -127,7 +106,7 @@ EnzSms::driver('twilio')->send('+8801xxxxxxxxx', 'Testing');
 ```
 
 > **Note:**
-> - If no driver is specified, Bangladeshi numbers use `onnorokom` or `alpha_bd`, foreign numbers use `twilio`.
+> - If no driver is specified, Bangladeshi numbers use the default driver (`bulk_sms_dhaka` or `alpha_bd`), foreign numbers use `twilio`.
 
 ---
 
