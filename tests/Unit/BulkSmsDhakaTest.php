@@ -4,6 +4,7 @@ namespace Enzaime\Sms\Tests\Unit;
 
 use Enzaime\Sms\Drivers\BulkSmsDhaka;
 use Enzaime\Sms\Tests\TestCase;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -123,5 +124,36 @@ class BulkSmsDhakaTest extends TestCase
 
         // This driver carries one-time codes; a log is the wrong place for them.
         $this->assertStringNotContainsString('55555', json_encode($logged[0]->context));
+    }
+
+    /**
+     * The failure that actually leaks. Both the API key and the message body
+     * are query parameters, and the HTTP client puts the whole request URL
+     * into its exception message — so an ordinary timeout handed the log the
+     * credential and the one-time code together. Only the response path was
+     * covered before, which is why this went unnoticed.
+     */
+    public function test_a_transport_failure_logs_neither_the_api_key_nor_the_code(): void
+    {
+        Http::fake(fn () => throw new ConnectionException(
+            'cURL error 28: Operation timed out for https://bulksmsdhaka.net/api/sendtext'
+            .'?apikey=REAL-SECRET-KEY&callerID=1234&number=01912345678&message=Verification+code%3A+55555.'
+        ));
+
+        $logged = [];
+        Log::listen(function ($event) use (&$logged) {
+            $logged[] = $event;
+        });
+
+        $this->assertSame(0, (new BulkSmsDhaka)->send('01912345678', 'Verification code: 55555.'));
+
+        $context = json_encode($logged[0]->context);
+
+        $this->assertStringNotContainsString('REAL-SECRET-KEY', $context, 'the API key must never reach the log');
+        $this->assertStringNotContainsString('55555', $context, 'the one-time code must never reach the log');
+
+        // What went wrong still has to survive, or the log is worthless.
+        $this->assertStringContainsString('Operation timed out', $context);
+        $this->assertStringContainsString('[redacted]', $context);
     }
 }

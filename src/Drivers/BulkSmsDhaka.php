@@ -3,6 +3,7 @@
 namespace Enzaime\Sms\Drivers;
 
 use Enzaime\Sms\Contracts\SmsContract;
+use Enzaime\Sms\Support\RedactsSensitiveValues;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,8 @@ use Illuminate\Support\Str;
  */
 class BulkSmsDhaka implements SmsContract
 {
+    use RedactsSensitiveValues;
+
     /**
      * Codes the gateway uses for "we have it": accepted, and queued.
      */
@@ -128,13 +131,23 @@ class BulkSmsDhaka implements SmsContract
     }
 
     /**
-     * Log a refused send. Never includes the message text: this driver carries
-     * one-time codes, and a log is the wrong place for them.
+     * Log a refused send.
+     *
+     * Never includes the message text or the API key: this driver carries
+     * one-time codes and authenticates by query parameter, so both would
+     * otherwise ride into the log inside an exception message or an echoed
+     * response body. Everything taken off the wire is redacted first.
      *
      * @param  array<string, mixed>  $context
      */
     protected function reportFailure(string $number, array $context): void
     {
+        foreach (['exception', 'response'] as $tainted) {
+            if (isset($context[$tainted])) {
+                $context[$tainted] = $this->redact((string) $context[$tainted]);
+            }
+        }
+
         Log::error('[SMS][BulkSmsDhaka] send failed', $context + ['number' => $number]);
     }
 
