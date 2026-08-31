@@ -20,5 +20,11 @@ return [
             'api_key' => env('BULKSMSDHAKA_API_KEY'),
             'api_url' => env('BULKSMSDHAKA_API_URL', 'https://bulksmsdhaka.net/api/sendtext'),
         ],
+        'sslwireless' => [
+            'sid' => env('SSLWIRELESS_SID'),
+            'api_token' => env('SSLWIRELESS_API_TOKEN'),
+            'secret_key' => env('SSLWIRELESS_SECRET_KEY'),
+            'api_url' => env('SSLWIRELESS_API_URL', 'https://smsplus.sslwireless.com/api/v3'),
+        ],
     ],
 ];
