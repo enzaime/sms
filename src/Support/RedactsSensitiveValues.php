@@ -41,8 +41,9 @@ trait RedactsSensitiveValues
     /**
      * Replace the value of every sensitive parameter with a placeholder,
      * leaving the rest of the text — the part that says what went wrong —
-     * intact and useful. Both wire shapes are covered: `name=value` in a URL
-     * and `"name": "value"` in a JSON body.
+     * intact and useful. Three wire shapes are covered: `name=value` in a URL,
+     * `"name": "value"` in a JSON body, and `\"name\": \"value\"` for a body a
+     * gateway has echoed back inside a JSON string of its own.
      */
     protected function redact(string $text): string
     {
@@ -54,9 +55,21 @@ trait RedactsSensitiveValues
             $text
         );
 
-        return (string) preg_replace(
-            '/("(?:'.$names.')"\s*:\s*)"(?:\\\\.|[^"\\\\])*"/i',
+        /*
+         * The closing quote is optional. A response body is truncated before
+         * it is logged, and a cut landing inside a value would otherwise
+         * leave the pattern unmatched and the whole partial secret in place —
+         * which is the one case where the value on the wire is a live code.
+         */
+        $text = (string) preg_replace(
+            '/("(?:'.$names.')"\s*:\s*)"(?:\\\\.|[^"\\\\])*("|$)/i',
             '$1"[redacted]"',
+            $text
+        );
+
+        return (string) preg_replace(
+            '/(\\\\"(?:'.$names.')\\\\"\s*:\s*)\\\\"(?:\\\\\\\\.|(?!\\\\").)*(\\\\"|$)/i',
+            '$1\\"[redacted]\\"',
             $text
         );
     }

@@ -273,6 +273,65 @@ class SslWirelessTest extends TestCase
     }
 
     /**
+     * A response body is truncated before it reaches the log, and the cut can
+     * land inside the very value that must not be logged. A pattern needing
+     * the closing quote would find none and leave the partial code in place.
+     */
+    public function test_a_body_truncated_mid_code_is_still_redacted(): void
+    {
+        Http::fake([
+            'smsplus.sslwireless.com/*' => Http::response(
+                // Sized so the 500-character cut lands just past the code,
+                // leaving the value open: `"sms_body":"Your code is 55555`.
+                '{"status":"FAILED","status_code":4032,"error_message":"Invalid SMS","detail":"'
+                .str_repeat('x', 390).'","sms_body":"Your code is 55555"}',
+                503
+            ),
+        ]);
+
+        $logged = [];
+        Log::listen(function ($event) use (&$logged) {
+            $logged[] = $event;
+        });
+
+        $this->assertSame(0, (new SslWireless)->send('01912345678', 'Your code is 55555'));
+
+        $context = json_encode($logged[0]->context);
+
+        $this->assertStringContainsString('sms_body', $context, 'the cut has to fall inside the value');
+        $this->assertStringNotContainsString('55555', $context, 'a truncated code must not survive');
+        $this->assertStringContainsString('Invalid SMS', $context);
+    }
+
+    /**
+     * The gateway may echo the request back encoded inside a string of its
+     * own, which spells the keys `\"api_token\"` rather than `"api_token"`.
+     */
+    public function test_a_re_encoded_body_is_redacted(): void
+    {
+        Http::fake([
+            'smsplus.sslwireless.com/*' => Http::response(
+                '{"status":"FAILED","error_message":"Invalid SMS","request":'
+                .'"{\\"api_token\\":\\"REAL-SECRET-TOKEN\\",\\"sms\\":\\"Your code is 55555\\"}"}',
+                503
+            ),
+        ]);
+
+        $logged = [];
+        Log::listen(function ($event) use (&$logged) {
+            $logged[] = $event;
+        });
+
+        $this->assertSame(0, (new SslWireless)->send('01912345678', 'Your code is 55555'));
+
+        $context = json_encode($logged[0]->context);
+
+        $this->assertStringNotContainsString('REAL-SECRET-TOKEN', $context);
+        $this->assertStringNotContainsString('55555', $context);
+        $this->assertStringContainsString('Invalid SMS', $context, 'what went wrong still has to survive');
+    }
+
+    /**
      * A repeated CSMS ID is refused by the gateway (code 4023), so the id has
      * to be fresh even when the same text goes to the same number twice.
      */
